@@ -1,82 +1,22 @@
-import psycopg2
+from personal_details_service import (
+    create_person,
+    read_people,
+    update_person,
+    delete_person
+)
 
+def show_people():
+    rows = read_people()
 
-def get_connection():
-    return psycopg2.connect(
-        host="localhost",
-        database="firstdb",
-        user="postgres",
-        password="Master@123"
-    )
-
-def create_person(first_name, last_name, email):
-    conn = get_connection()
-    cur = conn.cursor()
-
-    query = """
-        INSERT INTO employee.personal_details (first_name, last_name, email)
-        VALUES (%s, %s, %s)
-    """
-    cur.execute(query, (first_name, last_name, email))
-    conn.commit()
-
-    cur.close()
-    conn.close()
-    print("Record created successfully.")
-
-    cur.close()
-    conn.close()
-
-def read_people():
-    conn = get_connection()
-    cur = conn.cursor()
-
-    query = """
-        SELECT id, first_name, last_name, email
-        FROM employee.personal_details
-        ORDER BY id
-    """
-    cur.execute(query)
-    rows = cur.fetchall()
+    if not rows:
+        print("No records found.")
+        return
 
     for row in rows:
-        print(row)
+        print(f"ID: {row[0]}, First Name: {row[1]}, Last Name: {row[2]}, Email: {row[3]}")
 
-    cur.close()
-    conn.close()
 
-def update_person(person_id, first_name, last_name, email):
-    conn = get_connection()
-    cur = conn.cursor()
-
-    query = """
-        UPDATE employee.personal_details
-        SET first_name = %s, last_name = %s, email = %s
-        WHERE id = %s
-    """
-    cur.execute(query, (first_name, last_name, email, person_id))
-    conn.commit()
-
-    cur.close()
-    conn.close()
-    print("Record updated successfully.")
-
-def delete_person(person_id):
-    conn = get_connection()
-    cur = conn.cursor()
-
-    query = """
-        DELETE FROM employee.personal_details
-        WHERE id = %s
-    """
-    cur.execute(query, (person_id,))
-    conn.commit()
-
-    cur.close()
-    conn.close()
-    print("Record deleted successfully.")
-
-if __name__ == "__main__":
+def main():
     while True:
         print("\nMenu")
         print("1. Create")
@@ -88,19 +28,19 @@ if __name__ == "__main__":
         choice = input("Choose an option: ")
 
         if choice == "1":
-            first_name = input("Enter first name: ")
-            last_name = input("Enter last name: ")
-            email = input("Enter email :")
+            first_name = input("Enter first name: ").strip()
+            last_name = input("Enter last name: ").strip()
+            email = input("Enter email :").strip()
             create_person(first_name, last_name, email)
 
         elif choice == "2":
-            read_people()
+            show_people()
 
         elif choice == "3":
             person_id = int(input("Enter id to update: "))
-            first_name = input("Enter new first name: ")
-            last_name = input("Enter new last name: ")
-            email = input("Enter new email: ")
+            first_name = input("Enter new first name: ").strip()
+            last_name = input("Enter new last name: ").strip()
+            email = input("Enter new email: ").strip()
             update_person(person_id, first_name, last_name, email)
 
         elif choice == "4":
@@ -112,5 +52,8 @@ if __name__ == "__main__":
             break
 
         else:
-            print("Invalid choice.")
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
 
